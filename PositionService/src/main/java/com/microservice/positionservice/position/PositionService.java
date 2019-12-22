@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.microservice.positionservice.employee.EmployeeClient;
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,7 @@ public class PositionService {
         return positionRepository.findAll();
     }
 
+    @HystrixCommand(fallbackMethod = "")
     public Position findPositionById(String id) {
         Optional<Position> position = positionRepository.findById(id);
         position.ifPresent(p -> {
@@ -43,6 +45,10 @@ public class PositionService {
     public Position updatePosition(String id, Position position) {
         positionRepository.findById(id).ifPresent(p -> position.setId(p.getId()));
         return positionRepository.save(position);
+    }
+
+    public String defaultFallBack(String id) {
+        return id;
     }
 
 }
